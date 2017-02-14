@@ -110,7 +110,8 @@ class BaseGenerator:
         for time_slice, slice_data in slices.items():
             utc_slice = time_slice.tz_convert('UTC')
             meta['timestamp'] = datetime_isoformat(utc_slice)
-            slice_meta, slison = encoder.encode_slice(slice_data, **meta)
+            slice_data_typed = slice_data.astype(self._value_type_)
+            slice_meta, slison = encoder.encode_slice(slice_data_typed, **meta)
             slisons.append({'datetime': utc_slice,
                             'bytes': slison})
         return slisons
@@ -121,4 +122,3 @@ class BaseGenerator:
                 'x_size': self._x_size_,
                 'y_size': self._y_size_,
                 'value_type': self._value_type_}
-
