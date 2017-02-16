@@ -108,6 +108,8 @@ class BaseGenerator:
         meta = self.shared_slison_meta()
         slisons = []
         for time_slice, slice_data in slices.items():
+            if not sum(~np.isnan(slice_data)):
+                continue
             utc_slice = time_slice.tz_convert('UTC')
             meta['timestamp'] = datetime_isoformat(utc_slice)
             slice_data_typed = slice_data.astype(self._value_type_)
