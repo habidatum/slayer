@@ -1,5 +1,5 @@
 import pandas as pd
-from slayer import constants
+from slayer import constants, file_utils
 
 
 class BaseConverter(object):
@@ -11,15 +11,15 @@ class BaseConverter(object):
         raise NotImplementedError
 
     @staticmethod
-    def convert_dates(raw_data, source_date_format, start_date_column,
-                      end_date_column=None, date_format=None):
+    def convert_dates(raw_data, start_date_column, end_date_column=None,
+                      date_format=None):
         start_slices = convert_date_column(raw_data[start_date_column],
-                                           source_date_format, date_format)
+                                           date_format)
         raw_data[constants.start_date_column] = start_slices
 
         if end_date_column:
             end_slices = convert_date_column(raw_data[end_date_column],
-                                             source_date_format, date_format)
+                                             date_format)
             raw_data[constants.end_date_column] = end_slices
         else:
             raw_data[constants.end_date_column] = start_slices
@@ -30,6 +30,13 @@ class BaseConverter(object):
     def convert_categories(raw_data, categories):
         renamed_columns = {category: constants.category_column_prefix + category
                            for category in categories}
+        raw_data.rename(columns=renamed_columns, inplace=True)
+        return raw_data
+
+    @staticmethod
+    def convert_spatial(raw_data, lat_column, lon_column):
+        renamed_columns = {lat_column: constants.lat_column,
+                           lon_column: constants.lon_column}
         raw_data.rename(columns=renamed_columns, inplace=True)
         return raw_data
 
@@ -53,9 +60,13 @@ class BaseConverter(object):
         return raw_data
 
 
-def convert_date_column(date_column, source_date_format, date_format):
+def convert_date_column(date_column, date_format):
+    source_date_format = file_utils.detect_dateformat(date_column)
     if source_date_format == constants.DateFormat.timestamp:
         return pd.to_datetime(date_column, unit='s',
+                              infer_datetime_format=True, utc=True)
+    elif source_date_format == constants.DateFormat.timestamp_ms:
+        return pd.to_datetime(date_column, unit='ms',
                               infer_datetime_format=True, utc=True)
     return pd.to_datetime(date_column, format=date_format,
                           infer_datetime_format=True, utc=True)

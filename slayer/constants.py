@@ -1,5 +1,4 @@
 from enum import Enum
-from os import path
 from geopy import point
 
 time_column = 'time_slice'
@@ -14,6 +13,7 @@ default_option = 'all'
 class DateFormat(Enum):
     datestring = 0
     timestamp = 1
+    timestamp_ms = 2
 
 
 class Bbox:
@@ -50,9 +50,3 @@ class Bbox:
 
 start_date_column = 'sl_start_date'
 end_date_column = 'sl_end_date'
-
-standard_dir = 'data/standard'
-slices_dir = 'data/slices'
-slisons_dir = 'data/slisons'
-# TODO: FIX to someting better
-base_dir = path.curdir

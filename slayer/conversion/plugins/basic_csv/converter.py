@@ -1,6 +1,5 @@
 from slayer.conversion.base import BaseConverter
 from slayer import file_utils
-from slayer.constants import DateFormat
 
 
 class Converter(BaseConverter):
@@ -12,17 +11,17 @@ class Converter(BaseConverter):
         start_date_column = kwargs.get('start_date_column')
         categories = kwargs.get('categories_columns')
         end_date_column = kwargs.get('end_date_column', None)
-        source_date_format = DateFormat(kwargs.get('source_date_format',
-                                                   DateFormat.timestamp))
         weight_column = kwargs.get('weight_column', None)
+        lat_column = kwargs.get('lat_column', 'lat')
+        lon_column = kwargs.get('lat_column', 'lon')
 
         if not categories:
             raw_data, categories = Converter.add_default_category(raw_data)
 
         data = Converter.convert_categories(raw_data, categories)
-        data = Converter.convert_dates(data, source_date_format,
-                                       start_date_column, end_date_column)
+        data = Converter.convert_dates(data, start_date_column, end_date_column)
         data = Converter.convert_weight(data, weight_column)
+        data = Converter.convert_spatial(data, lat_column, lon_column)
 
         std_df = file_utils.extract_std_data(data)
         file_utils.dump_std_data(std_df, output_filepath)

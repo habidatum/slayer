@@ -1,7 +1,7 @@
-from os import path, makedirs
 import pandas as pd
 from slayer import constants
 import itertools
+from datetime import datetime
 from collections import OrderedDict
 
 
@@ -27,14 +27,6 @@ def extract_subsets(filepath, additive=True):
     return subsets
 
 
-def standart_data_filepath(dataset_id):
-    df_dir = path.join(constants.base_dir, constants.standard_dir)
-    if not path.exists(df_dir):
-        makedirs(df_dir)
-    filepath = '{}/{}.csv'.format(df_dir, dataset_id)
-    return filepath
-
-
 def get_subset(subset_options, categories):
     if isinstance(subset_options, str):
         subset_options = [subset_options]
@@ -54,11 +46,6 @@ def dump_std_data(df, filepath):
     dump_dataframe(df, filepath)
 
 
-def load_standard_data(dataset_id):
-    filepath = standart_data_filepath(dataset_id)
-    return load_dataframe(filepath)
-
-
 def load_dataframe(filepath):
     return pd.read_csv(filepath)
 
@@ -72,7 +59,8 @@ def sorted_categories(categories):
 
 
 def extract_categories_columns(std_data):
-    categories = [clmn for clmn in std_data.columns
+    categories = [clmn[len(constants.category_column_prefix):]
+                  for clmn in std_data.columns
                   if clmn.startswith(constants.category_column_prefix)]
     sorted_categories_names = sorted_categories(categories)
     return sorted_categories_names
@@ -108,3 +96,17 @@ def get_additive_subsets(categories, df):
     subsets = [get_subset(subset_options, categories)
                for subset_options, subset_slices in df.groupby(categories)]
     return subsets
+
+
+def detect_dateformat(date_column):
+    date_element = date_column.iloc[0]
+    try:
+        date = datetime.fromtimestamp(date_element)
+        if date.year > 2100:  # Just some large enough year
+            return constants.DateFormat.timestamp_ms
+        else:
+            return constants.DateFormat.timestamp
+    except TypeError:
+        return constants.DateFormat.datestring
+    except ValueError:
+        return constants.DateFormat.timestamp_ms
