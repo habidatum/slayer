@@ -13,7 +13,7 @@ class Converter(BaseConverter):
         end_date_column = kwargs.get('end_date_column', None)
         weight_column = kwargs.get('weight_column', None)
         lat_column = kwargs.get('lat_column', 'lat')
-        lon_column = kwargs.get('lat_column', 'lon')
+        lon_column = kwargs.get('lon_column', 'lon')
 
         if not categories:
             raw_data, categories = Converter.add_default_category(raw_data)
