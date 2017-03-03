@@ -59,8 +59,7 @@ def sorted_categories(categories):
 
 
 def extract_categories_columns(std_data):
-    categories = [clmn[len(constants.category_column_prefix):]
-                  for clmn in std_data.columns
+    categories = [clmn for clmn in std_data.columns
                   if clmn.startswith(constants.category_column_prefix)]
     sorted_categories_names = sorted_categories(categories)
     return sorted_categories_names
