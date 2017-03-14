@@ -19,8 +19,8 @@ def convert_lat(std_data):
 
 
 def convert_time_intervals(time_intervals):
-    return[[parse_datetime(time_int[0]), parse_datetime(time_int[1])]
-           for time_int in time_intervals]
+    return [[parse_datetime(time_int[0]), parse_datetime(time_int[1])]
+            for time_int in time_intervals]
 
 
 def filter_df_time_intervals(data, time_intervals):
@@ -32,6 +32,7 @@ def index_datetime(std_data, tz='UTC'):
     std_data.index = pd.to_datetime(std_data[constants.start_date_column],
                                     infer_datetime_format=True)
     std_data.index = std_data.index.tz_localize('UTC').tz_convert(tz)
+    std_data.sort_index(inplace=True)
     return std_data
 
 
