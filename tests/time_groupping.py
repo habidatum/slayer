@@ -1,6 +1,7 @@
 import pandas as pd
 from isodate import parse_duration
 from slayer.generation.plugins.point import Generator
+from slayer.generation import utils
 from slayer import constants
 
 
@@ -24,7 +25,7 @@ def test_minutes_lost():
     assert_nothing_is_lost(parse_duration('PT10M'), parse_duration('PT15M'))
 
 
-def test_days_loast():
+def test_days_lost():
     assert_nothing_is_lost(parse_duration('P1D'), parse_duration('P7D'))
 
 
@@ -47,10 +48,25 @@ def assert_aggregation_ratio(source_duration, target_duration):
     assert len(month_df)/len(time_slices) == target_duration/source_duration
 
 
+def test_minutes_intervals():
+    time_intervals = basic_generator_stub()['time_intervals']
+    slice_duration = parse_duration('PT30M')
+    assert_timeinterval_filtering(time_intervals, slice_duration)
+
+
+def assert_timeinterval_filtering(time_intervals, slice_duration):
+    intervals = utils.convert_time_intervals(time_intervals)
+    month_df = month_df_stub(slice_duration)
+    data = utils.index_datetime(month_df)
+    data = utils.filter_df_time_intervals(data, intervals)
+
+
 def basic_generator_stub():
     return {'bbox': {'bottom_right_lat': 39.54462, 'top_left_lat': 39.98894,
                      'top_left_lon': -105.26372, 'bottom_right_lon': -104.63632},
-            'cell_size': 100}
+            'cell_size': 100,
+            'time_intervals': [['2012-08-07T14:10:30Z', '2012-09-07T14:10:30Z'],
+                               ['2013-08-07T14:10:30Z', '2013-09-07T14:10:30Z']]}
 
 
 def month_df_stub(duration):
