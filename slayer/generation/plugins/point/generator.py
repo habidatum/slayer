@@ -13,7 +13,9 @@ class Generator(BaseGenerator):
         additive = kwargs.get('additive', True)
         std_data = file_utils.load_dataframe(kwargs.get('filepath'))
 
-        data = utils.convert_lat(std_data)
+        data = utils.index_datetime(std_data, self._tz_)
+        data = utils.filter_df_time_intervals(data, self._time_intervals_)
+        data = utils.convert_lat(data)
         categories_options = self.calculate_slices(data, weighted, additive)
 
         result = {'x_size': self._x_size_, 'y_size': self._y_size_,
@@ -32,30 +34,26 @@ class Generator(BaseGenerator):
 
     def additive(self, data, categories, categories_options, weighted=False):
         for subset_options, subset_data in data.groupby(categories):
-            self.export_subset(subset_data, weighted, subset_options,
-                               categories, file_utils.get_subset)
+            self.calculate_subset(subset_data, weighted, subset_options,
+                                  categories, file_utils.get_subset)
 
     def nonadditive(self, data, categories, categories_options, weighted=False):
         subsets = file_utils.get_nonadditive_subsets(categories_options)
 
         for subset_options in subsets:
             subset_data = self.non_additive_subset_data(data, subset_options)
-            self.export_subset(subset_data, weighted, subset_options,
-                               categories, file_utils.get_subset_nonadditive)
+            self.calculate_subset(subset_data, weighted, subset_options,
+                                  categories, file_utils.get_subset_nonadditive)
 
-    def export_subset(self, subset_data, weighted, subset_options,
-                      categories, subset_function):
+    def calculate_subset(self, subset_data, weighted, subset_options,
+                         categories, subset_function):
         slice_duration = parse_duration(self._slice_duration_)
-        slice_data = self.group_by_time(subset_data, slice_duration,
-                                        self._tz_)
+        slice_data = self.group_by_time(subset_data, slice_duration)
         data_volume = self.calculate_volume(slice_data, weighted)
         subset = subset_function(subset_options, categories)
         self.export_volume(subset, data_volume)
 
-    def group_by_time(self, data, slice_duration, tz='UTC'):
-        data.index = to_datetime(data[constants.start_date_column],
-                                 infer_datetime_format=True)
-        data.index = data.index.tz_localize('UTC').tz_convert(tz)
+    def group_by_time(self, data, slice_duration):
         time_slices = data.groupby(TimeGrouper(freq=slice_duration))
         return time_slices
 

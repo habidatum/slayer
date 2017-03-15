@@ -3,6 +3,8 @@ from geopy.distance import vincenty
 from geopy.point import Point
 from os import path
 from slayer import file_utils, constants
+from isodate import parse_datetime, parse_duration, datetime_isoformat
+import pandas as pd
 
 
 def lat2y(a):
@@ -14,6 +16,39 @@ def convert_lat(std_data):
     new_lat = std_data[constants.lat_column].apply(lat2y)
     std_data[constants.lat_column] = new_lat
     return std_data
+
+
+def convert_time_intervals(time_intervals):
+    return [[parse_datetime(time_int[0]), parse_datetime(time_int[1])]
+            for time_int in time_intervals]
+
+
+def filter_df_time_intervals(data, time_intervals):
+    dfs = [data[time_int[0]:time_int[1]] for time_int in time_intervals]
+    return pd.concat(dfs)
+
+
+def index_datetime(std_data, tz='UTC'):
+    std_data.index = pd.to_datetime(std_data[constants.start_date_column],
+                                    infer_datetime_format=True)
+    std_data.index = std_data.index.tz_localize('UTC').tz_convert(tz)
+    std_data.sort_index(inplace=True)
+    return std_data
+
+
+def clap_time_intervals(time_intervals, slice_duration):
+    intervals = convert_time_intervals(time_intervals)
+    freq = parse_duration(slice_duration)
+    grouper = pd.TimeGrouper(freq=freq)
+
+    def clap(boundary): return pd.DataFrame(index=[boundary]).groupby(grouper)
+
+    def extract(boundary): return next(iter(boundary.groups))
+
+    clapped_time_intervals = [[datetime_isoformat(extract(clap(boundary)))
+                               for boundary in time_int]
+                              for time_int in intervals]
+    return clapped_time_intervals
 
 
 def get_bbox_geometry(bbox, cell_size):
