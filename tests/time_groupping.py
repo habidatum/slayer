@@ -61,6 +61,13 @@ def assert_timeinterval_filtering(time_intervals, slice_duration):
     data = utils.filter_df_time_intervals(data, intervals)
 
 
+def test_intervals_clap():
+    time_intervals = basic_generator_stub()['time_intervals']
+    clapped_intervals = utils.clap_time_intervals(time_intervals, 'P1D')
+    assert clapped_intervals[0][0] == '2012-08-07T00:00:00Z'
+    assert clapped_intervals[1][1] == '2013-09-07T00:00:00Z'
+
+
 def basic_generator_stub():
     return {'bbox': {'bottom_right_lat': 39.54462, 'top_left_lat': 39.98894,
                      'top_left_lon': -105.26372, 'bottom_right_lon': -104.63632},
