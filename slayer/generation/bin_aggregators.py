@@ -1,6 +1,11 @@
 import numpy as np
 
 
+def aggregator(weight_function):
+    return {'sum': weighted_sum,
+            'mean': weighted_mean}[weight_function]
+
+
 def weighted_mean(index, slice_area, counts, weights):
     weighted = np.bincount(index, minlength=slice_area, weights=weights)
     weighted_counts = weighted/counts

@@ -24,7 +24,14 @@ def extract_subsets(filepath, additive=True):
         subsets = get_additive_subsets(categories, df)
     else:
         subsets = get_nonadditive_subsets(categories, categories_options)
+    subsets = remove_categories_prefix(subsets)
     return subsets
+
+
+def remove_categories_prefix(subsets):
+    return [{category[len(constants.category_column_prefix):]: options
+             for category, options in subset.items()}
+            for subset in subsets]
 
 
 def get_subset(subset_options, categories):

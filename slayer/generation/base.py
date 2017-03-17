@@ -1,6 +1,6 @@
 import numpy as np
 
-from slayer import constants
+from slayer import constants, file_utils
 from slayer.generation import utils, volume, bin_aggregators
 from slisonner import encoder
 from isodate import datetime_isoformat
@@ -35,29 +35,29 @@ class BaseGenerator:
     def calculate_slices(self, *args):
         raise NotImplementedError
 
-    def calculate_volume(self, slices, weighted=False):
+    def calculate_volume(self, slices, weight_function=None):
         subset_volume = volume.Volume()
 
         for slice_id, slice_df in slices:
             if len(slice_df):
-                slice_data = self.calculate_slice(slice_df, weighted)
+                slice_data = self.calculate_slice(slice_df, weight_function)
                 subset_volume.add_slice((slice_id, slice_data))
 
         return subset_volume
 
-    def calculate_slice(self, slice_df, weighted):
+    def calculate_slice(self, slice_df, weight_function):
         lats = slice_df[constants.lat_column].values
         lons = slice_df[constants.lon_column].values
 
         (slice_index, slice_area,
          slice_counts, mask) = self.bin_count(lon=lons, lat=lats)
-        if weighted:
+        if weight_function:
             weights = slice_df[constants.weight_column].values
             weights = weights[mask]
-            final_slice_counts = bin_aggregators.weighted_mean(slice_index,
-                                                               slice_area,
-                                                               slice_counts,
-                                                               weights)
+            aggregator = bin_aggregators.aggregator(weight_function)
+
+            final_slice_counts = aggregator(slice_index, slice_area,
+                                            slice_counts, weights)
         else:
             final_slice_counts = slice_counts
         return final_slice_counts
@@ -99,6 +99,7 @@ class BaseGenerator:
     def export_volume(self, subset, data_volume):
         if self._progress_callback_:
             slisons = self.slices_to_slisons(data_volume.slices)
+            subset = file_utils.remove_categories_prefix([subset])[0]
             self._progress_callback_(subset, slisons)
         return data_volume.min, data_volume.max
 
