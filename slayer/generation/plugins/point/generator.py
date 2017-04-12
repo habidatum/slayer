@@ -1,9 +1,9 @@
-from slayer import constants, file_utils
+from slayer import file_utils
 from slayer.generation import utils
 from slayer.generation.base import BaseGenerator
 from isodate import parse_duration
 import numpy as np
-from pandas import TimeGrouper, to_datetime
+from pandas import TimeGrouper
 
 
 class Generator(BaseGenerator):
@@ -16,6 +16,8 @@ class Generator(BaseGenerator):
         data = utils.index_datetime(std_data, self._tz_)
         data = utils.filter_df_time_intervals(data, self._time_intervals_)
         data = utils.convert_lat(data)
+        if self._approximated_:
+            data = self.approximate(data)
         categories_options = self.calculate_slices(data, weight_function, additive)
 
         result = {'x_size': self._x_size_, 'y_size': self._y_size_,
@@ -66,3 +68,9 @@ class Generator(BaseGenerator):
     def _slices_calculation(self, additive):
         return {True: self.additive,
                 False: self.nonadditive}[additive]
+
+    def approximate(self, data):
+        data.index = data.index.to_series().apply(
+                    lambda dt: dt.replace(year=1970, month=1, day=2))
+        data.index = data.index.tz_localize(self._tz_)
+        return data

@@ -5,7 +5,6 @@ from slayer import file_utils
 class Converter(BaseConverter):
 
     def convert_data(self, **kwargs):
-
         raw_data = file_utils.load_dataframe(kwargs.get('filepath'))
         output_filepath = kwargs.get('output_filepath')
         start_date_column = kwargs.get('start_date_column')

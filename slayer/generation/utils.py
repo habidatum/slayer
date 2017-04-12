@@ -3,7 +3,9 @@ from geopy.distance import vincenty
 from geopy.point import Point
 from os import path
 from slayer import file_utils, constants
+from datetime import datetime
 from isodate import parse_datetime, parse_duration, datetime_isoformat
+import pytz
 import pandas as pd
 
 
@@ -49,6 +51,13 @@ def clap_time_intervals(time_intervals, slice_duration):
                                for boundary in time_int]
                               for time_int in intervals]
     return clapped_time_intervals
+
+
+def approximated_time_intervals(tz):
+    source_intetval = [datetime(1970, 1, 2, 0, 0, 0),
+                       datetime(1970, 1, 3, 0, 0, 0)]
+    utc_interval = [pytz.timezone(tz).localize(dt).astimezone(pytz.UTC) for dt in source_intetval]
+    return [datetime_isoformat(dt) for dt in utc_interval]
 
 
 def get_bbox_geometry(bbox, cell_size):

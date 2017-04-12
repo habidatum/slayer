@@ -18,6 +18,7 @@ class BaseGenerator:
         self._slice_duration_ = kwargs.get('slice_duration')
         self._value_type_ = kwargs.get('value_type', 'float32')
         self._tz_ = kwargs.get('tz', 'UTC')
+        self._approximated_ = kwargs.get('approximated', False)
         time_intervals = kwargs.get('time_intervals', None)
         if time_intervals:
             self._time_intervals_ = utils.convert_time_intervals(time_intervals)
