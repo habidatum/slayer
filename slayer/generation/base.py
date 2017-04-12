@@ -91,7 +91,7 @@ class BaseGenerator:
         :param clip_size: the x/y size of the slice
         :return: (indices of the bins, mask of the values that are inside bbox)
         '''
-        relative_values = np.abs((values - start_value) / self._step_)
+        relative_values = (values - start_value) / self._step_
         round_values = np.floor(relative_values)
         index_mask = (round_values >= 0) & (round_values < clip_size)
         clipped_index = np.clip(round_values, 0, clip_size - 1)
