@@ -15,6 +15,7 @@ def weighted_mean(index, slice_area, counts, weights):
 
 def weighted_sum(index, slice_area, counts, weights):
     weighted = np.bincount(index, minlength=slice_area, weights=weights)
+    weighted = weighted.astype(float)
     # The NaNs here represent the places with no measurements
     weighted[counts == 0.0] = np.nan
     return weighted
