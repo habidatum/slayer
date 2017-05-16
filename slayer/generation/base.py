@@ -14,6 +14,7 @@ class BaseGenerator:
         ((self._x_size_, self._y_size_),
          (self._min_lon_, self._min_lat_),
          self._step_) = utils.get_bbox_geometry(bbox, cell_size)
+        self._bbox_ = bbox
         self._layer_id_ = kwargs.get('layer_id')
         self._slice_duration_ = kwargs.get('slice_duration')
         self._value_type_ = kwargs.get('value_type', 'float32')
@@ -117,6 +118,7 @@ class BaseGenerator:
                 continue
             utc_slice = time_slice.tz_convert('UTC')
             meta['timestamp'] = datetime_isoformat(utc_slice)
+            meta['geoBounds'] = self._bbox_.geo_bounds()
             slice_data_typed = slice_data.astype(self._value_type_)
             slice_meta, slison = encoder.encode_slice(slice_data_typed, **meta)
             slisons.append({'datetime': utc_slice,
