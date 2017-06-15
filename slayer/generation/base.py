@@ -62,6 +62,7 @@ class BaseGenerator:
                                             slice_counts, weights)
         else:
             final_slice_counts = slice_counts
+            final_slice_counts[final_slice_counts == 0] = np.nan
         return final_slice_counts
 
     def bin_count(self, lon, lat):
