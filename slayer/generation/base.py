@@ -61,7 +61,7 @@ class BaseGenerator:
             final_slice_counts = aggregator(slice_index, slice_area,
                                             slice_counts, weights)
         else:
-            final_slice_counts = slice_counts
+            final_slice_counts = slice_counts.astype(np.float32)
             final_slice_counts[final_slice_counts == 0] = np.nan
         return final_slice_counts
 
