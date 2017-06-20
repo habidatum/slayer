@@ -60,10 +60,10 @@ class BaseGenerator:
 
             final_slice_counts = aggregator(slice_index, slice_area,
                                             slice_counts, weights)
+
         else:
-            final_slice_counts = slice_counts.astype(np.float32)
-            final_slice_counts[final_slice_counts == 0] = np.nan
-        return final_slice_counts
+            final_slice_counts = slice_counts
+        return final_slice_counts.astype(self._value_type_)
 
     def bin_count(self, lon, lat):
         '''
@@ -120,8 +120,7 @@ class BaseGenerator:
             utc_slice = time_slice.tz_convert('UTC')
             meta['timestamp'] = datetime_isoformat(utc_slice)
             meta['geoBounds'] = self._bbox_.geo_bounds()
-            slice_data_typed = slice_data.astype(self._value_type_)
-            slice_meta, slison = encoder.encode_slice(slice_data_typed, **meta)
+            slice_meta, slison = encoder.encode_slice(slice_data, **meta)
             slisons.append({'datetime': utc_slice,
                             'bytes': slison})
         return slisons
