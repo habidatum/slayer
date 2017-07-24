@@ -119,7 +119,6 @@ class BaseGenerator:
                 continue
             utc_slice = time_slice.tz_convert('UTC')
             meta['timestamp'] = datetime_isoformat(utc_slice)
-            meta['geoBounds'] = self._bbox_.geo_bounds()
             slice_meta, slison = encoder.encode_slice(slice_data, **meta)
             slisons.append({'datetime': utc_slice,
                             'bytes': slison})
@@ -127,7 +126,9 @@ class BaseGenerator:
 
     def shared_slison_meta(self):
         return {'slice_duration': self._slice_duration_,
+                'tz': self._tz_,
                 'layer_id': self._layer_id_,
                 'x_size': self._x_size_,
                 'y_size': self._y_size_,
-                'value_type': self._value_type_}
+                'value_type': self._value_type_,
+                'geoBounds': self._bbox_.geo_bounds()}
