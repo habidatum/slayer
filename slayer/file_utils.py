@@ -74,7 +74,7 @@ def extract_categories_columns(std_data):
 
 def extract_categories_options(std_data, categories):
     def sorted_options(category_values):
-        return sorted(list(category_values.unique()))
+        return sorted([str(opt) for opt in category_values.unique()])
 
     cats = {category: sorted_options(std_data[category])
             for category in categories}

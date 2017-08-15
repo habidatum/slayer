@@ -14,6 +14,10 @@ def lat2y(a):
         math.tan(math.pi / 4.0 + a * (math.pi / 180.0) / 2.0))
 
 
+def y2lat(a):
+    return 180.0/math.pi*(2.0*math.atan(math.exp(a*math.pi/180.0))-math.pi/2.0)
+
+
 def convert_lat(std_data):
     new_lat = std_data[constants.lat_column].apply(lat2y)
     std_data[constants.lat_column] = new_lat
@@ -58,6 +62,17 @@ def approximated_time_intervals(tz):
                        datetime(1970, 1, 3, 0, 0, 0)]
     utc_interval = [pytz.timezone(tz).localize(dt).astimezone(pytz.UTC) for dt in source_intetval]
     return [datetime_isoformat(dt) for dt in utc_interval]
+
+
+def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cell_size):
+    size, (min_lon, min_lat), step = get_bbox_geometry(constants.Bbox(bottom_right_lat=bottom_right_lat,
+                                     bottom_right_lon=bottom_right_lon,
+                                     top_left_lat=top_left_lat,
+                                     top_left_lon=top_left_lon), cell_size)
+
+    new_bottom_right_lon = min_lon + step * size[0]
+    new_top_left_lat = y2lat(min_lat + step * size[1])
+    return bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat
 
 
 def get_bbox_geometry(bbox, cell_size):
