@@ -59,7 +59,7 @@ class BaseGenerator:
             aggregator = bin_aggregators.aggregator(weight_function)
 
             final_slice_counts = aggregator(slice_index, slice_area,
-                                            slice_counts, weights)
+                                            slice_counts, weights, self._value_type_)
 
         else:
             final_slice_counts = slice_counts
