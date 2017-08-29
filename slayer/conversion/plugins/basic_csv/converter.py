@@ -1,5 +1,6 @@
 from slayer.conversion.base import BaseConverter
-from slayer import file_utils
+import numpy as np
+from slayer import file_utils, constants
 
 
 class Converter(BaseConverter):
@@ -24,3 +25,11 @@ class Converter(BaseConverter):
 
         std_df = file_utils.extract_std_data(data)
         file_utils.dump_std_data(std_df, output_filepath)
+        if weight_column:
+            data_type = [nice_type for nice_type, np_types
+                         in np.sctypes.items()
+                         if std_df[constants.weight_column].dtype in np_types][-1]
+            return {'data_type': data_type}
+        else:
+            return {'data_type': 'uint'}
+

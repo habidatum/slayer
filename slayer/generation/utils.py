@@ -64,15 +64,15 @@ def approximated_time_intervals(tz):
     return [datetime_isoformat(dt) for dt in utc_interval]
 
 
-def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cell_size):
+def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cellsize):
     size, (min_lon, min_lat), step = get_bbox_geometry(constants.Bbox(bottom_right_lat=bottom_right_lat,
                                      bottom_right_lon=bottom_right_lon,
                                      top_left_lat=top_left_lat,
-                                     top_left_lon=top_left_lon), cell_size)
+                                     top_left_lon=top_left_lon), cellsize)
 
     new_bottom_right_lon = min_lon + step * size[0]
     new_top_left_lat = y2lat(min_lat + step * size[1])
-    return bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat
+    return new_bottom_right_lon, bottom_right_lat, top_left_lon, new_top_left_lat
 
 
 def get_bbox_geometry(bbox, cell_size):
