@@ -35,7 +35,7 @@ def remove_categories_prefix(subsets):
 
 
 def get_subset(subset_options, categories):
-    if not isinstance(subset_options, list):
+    if not (isinstance(subset_options, list) or isinstance(subset_options, set) or isinstance(subset_options, tuple)):
         subset_options = [subset_options]
 
     subset = {categories[i]: [option] for i, option in
