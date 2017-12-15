@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="slayer",
-    version='0.3.13',
+    version='0.3.14',
     author="Nikita Pestrov",
     author_email="nikita.pestrov@habidatum.com",
     description=("Index tabular data into volume slices, convert volumes to"
