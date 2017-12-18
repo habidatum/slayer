@@ -11,7 +11,10 @@ class Generator(BaseGenerator):
     def generate_slisons(self, **kwargs):
         weight_function = kwargs.get('weight_function', None)
         additive = kwargs.get('additive', True)
-        std_data = file_utils.load_dataframe(kwargs.get('filepath'))
+        if kwargs.get('filepath', None):
+            std_data = file_utils.load_dataframe(kwargs.get('filepath'))
+        else:
+            std_data = kwargs.get('df')
 
         data = utils.index_datetime(std_data, self._tz_)
         data = utils.filter_df_time_intervals(data, self._time_intervals_)
