@@ -17,7 +17,12 @@ def extract_std_data(df):
 
 
 def extract_subsets(filepath, additive=True):
-    df = load_dataframe(filepath)
+    # TODO: this should be named differently
+    if type(filepath) == pd.core.frame.DataFrame:
+        df = filepath
+    else:
+        df = load_dataframe(filepath)
+
     categories = extract_categories_columns(df)
     categories_options = extract_categories_options(df, categories)
     if additive:

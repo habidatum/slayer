@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="slayer",
-    version='0.3.14',
+    version='0.3.15',
     author="Nikita Pestrov",
     author_email="nikita.pestrov@habidatum.com",
     description=("Index tabular data into volume slices, convert volumes to"
@@ -14,5 +14,5 @@ setup(
     zip_safe=True,
     install_requires=requirements,
     dependency_links=['git+ssh://git@bitbucket.org/mathrioshka/slisonner.git#egg=slisonner'],
-    classifiers=['Programming Language :: Python :: 3.4']
+    classifiers=['Programming Language :: Python :: 3.6']
 )
