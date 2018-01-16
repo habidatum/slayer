@@ -6,7 +6,10 @@ from slayer import file_utils, constants
 class Converter(BaseConverter):
 
     def convert_data(self, **kwargs):
-        raw_data = file_utils.load_dataframe(kwargs.get('filepath'))
+        if kwargs.get('filepath', None):
+            raw_data = file_utils.load_dataframe(kwargs.get('filepath'))
+        else:
+            raw_data = kwargs.get('df')
         output_filepath = kwargs.get('output_filepath', None)
         start_date_column = kwargs.get('start_date_column')
         categories = kwargs.get('categories_columns')
@@ -35,4 +38,3 @@ class Converter(BaseConverter):
         else:
             return {'data_type': 'uint',
                     'df': std_df}
-
