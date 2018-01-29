@@ -10,10 +10,10 @@ class BaseGenerator:
     def __init__(self, **kwargs):
         bbox, cell_size = kwargs.get('bbox'), kwargs.get('cell_size')
         bbox = constants.Bbox(**bbox)
-
+        resolution = kwargs.get('resolution', None)
         ((self._x_size_, self._y_size_),
          (self._min_lon_, self._min_lat_),
-         self._step_) = utils.get_bbox_geometry(bbox, cell_size)
+         self._step_) = utils.get_bbox_geometry(bbox, cell_size, resolution)
         self._bbox_ = bbox
         self._layer_id_ = kwargs.get('layer_id')
         self._slice_duration_ = kwargs.get('slice_duration')

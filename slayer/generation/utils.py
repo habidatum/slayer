@@ -75,22 +75,23 @@ def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cel
     return new_bottom_right_lon, bottom_right_lat, top_left_lon, new_top_left_lat
 
 
-def get_bbox_geometry(bbox, cell_size):
+def get_bbox_geometry(bbox, cell_size, resolution=None):
     min_lat, max_lat = lat2y(bbox.min_lat), lat2y(bbox.max_lat)
+    if not resolution:
+        width = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),
+                         Point(latitude=bbox.min_lat, longitude=bbox.max_lon)).meters
 
-    width = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),
-                     Point(latitude=bbox.min_lat, longitude=bbox.max_lon)).meters
+        height = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),
+                          Point(latitude=bbox.max_lat, longitude=bbox.min_lon)).meters
 
-    height = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),
-                      Point(latitude=bbox.max_lat, longitude=bbox.min_lon)).meters
+        x_size = math.ceil(width / cell_size)
+        y_size = math.ceil(height / cell_size)
+        size = (x_size, y_size)
+    else:
+        size = (resolution['x'], resolution['y'])
+    print('Volume Resolution: {}'.format(size))
 
-    x_size = math.ceil(width / cell_size)
-    y_size = math.ceil(height / cell_size)
-    size = (x_size, y_size)
-
-    print('Volume Size: {}'.format(size))
-
-    step = round(abs((bbox.max_lon - bbox.min_lon) / x_size), 5)
+    step = round(abs((bbox.max_lon - bbox.min_lon) / size[0]), 5)
 
     return size, (bbox.min_lon, min_lat), step
 
