@@ -13,7 +13,8 @@ class Converter(BaseConverter):
         output_filepath = kwargs.get('output_filepath', None)
         start_date_column = kwargs.get('start_date_column')
         categories = kwargs.get('categories_columns')
-        dataset_timezone = kwargs.get('dataset_timezone', None)
+        end_date_column = kwargs.get('end_date_column', None)
+        dataset_time_zone = kwargs.get('dataset_time_zone', None)
         weight_column = kwargs.get('weight_column', None)
         lat_column = kwargs.get('lat_column', 'lat')
         lon_column = kwargs.get('lon_column', 'lon')
@@ -22,8 +23,8 @@ class Converter(BaseConverter):
             raw_data, categories = Converter.add_default_category(raw_data)
 
         data = Converter.convert_categories(raw_data, categories)
-        data = Converter.convert_dates(data, start_date_column,
-                                       dataset_timezone=dataset_timezone)
+        data = Converter.convert_dates(data, start_date_column, end_date_column,
+                                       dataset_time_zone=dataset_time_zone)
         data = Converter.convert_weight(data, weight_column)
         data = Converter.convert_spatial(data, lat_column, lon_column)
 

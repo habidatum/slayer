@@ -11,10 +11,19 @@ class BaseConverter(object):
         raise NotImplementedError
 
     @staticmethod
-    def convert_dates(raw_data, start_date_column, date_format=None, dataset_timezone=None):
+    def convert_dates(raw_data, start_date_column, end_date_column=None,
+                      date_format=None, dataset_time_zone=None):
         start_slices = convert_date_column(raw_data[start_date_column],
-                                           date_format, dataset_timezone)
+                                           date_format, dataset_time_zone)
         raw_data[constants.start_date_column] = start_slices
+
+        if end_date_column:
+            end_slices = convert_date_column(raw_data[end_date_column],
+                                             date_format, dataset_time_zone)
+            raw_data[constants.end_date_column] = end_slices
+        else:
+            raw_data[constants.end_date_column] = start_slices
+
         return raw_data
 
     @staticmethod
@@ -51,7 +60,7 @@ class BaseConverter(object):
         return raw_data
 
 
-def convert_date_column(date_column, date_format, dataset_timezone):
+def convert_date_column(date_column, date_format, dataset_time_zone=None):
     source_date_format = file_utils.detect_dateformat(date_column)
     if source_date_format == constants.DateFormat.timestamp:
         return pd.to_datetime(date_column, unit='s',
@@ -60,11 +69,11 @@ def convert_date_column(date_column, date_format, dataset_timezone):
         return pd.to_datetime(date_column, unit='ms',
                               infer_datetime_format=True, utc=True)
 
-    if dataset_timezone:
+    if dataset_time_zone:
         return pd.to_datetime(date_column,
                               format=date_format,
                               infer_datetime_format=True, utc=True
-                              ).dt.tz_localize(dataset_timezone)\
+                              ).dt.tz_localize(dataset_time_zone)\
                                .dt.tz_convert('UTC')\
                                .dt.tz_convert(None)
 
