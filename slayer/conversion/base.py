@@ -73,7 +73,7 @@ def convert_date_column(date_column, date_format, dataset_time_zone=None):
         return pd.to_datetime(date_column,
                               format=date_format,
                               infer_datetime_format=True, utc=True
-                              ).dt.tz_localize(dataset_time_zone)\
+                              ).dt.tz_localize(dataset_time_zone, ambiguous='infer')\
                                .dt.tz_convert('UTC')\
                                .dt.tz_convert(None)
 
