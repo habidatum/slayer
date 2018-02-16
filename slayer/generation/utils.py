@@ -44,8 +44,7 @@ def index_datetime(std_data, tz='UTC'):
 
 def clap_time_intervals(time_intervals, slice_duration):
     intervals = convert_time_intervals(time_intervals)
-    freq = parse_duration(slice_duration)
-    grouper = pd.TimeGrouper(freq=freq)
+    grouper = time_grouper(slice_duration)
 
     def clap(boundary): return pd.DataFrame(index=[boundary]).groupby(grouper)
 
@@ -55,6 +54,15 @@ def clap_time_intervals(time_intervals, slice_duration):
                                for boundary in time_int]
                               for time_int in intervals]
     return clapped_time_intervals
+
+
+def time_grouper(slice_duration):
+    if slice_duration[-1] == 'Y':
+        return pd.TimeGrouper('AS')
+    elif slice_duration[-1] == 'M':
+        return pd.TimeGrouper(slice_duration.replace('P', '') + 'S')
+    else:
+        return pd.TimeGrouper(parse_duration(slice_duration))
 
 
 def approximated_time_intervals(tz):
