@@ -1,9 +1,7 @@
 from slayer import file_utils
 from slayer.generation import utils
 from slayer.generation.base import BaseGenerator
-from isodate import parse_duration
 import numpy as np
-from pandas import TimeGrouper
 
 
 class Generator(BaseGenerator):
@@ -52,14 +50,13 @@ class Generator(BaseGenerator):
 
     def calculate_subset(self, subset_data, weight_function, subset_options,
                          categories, subset_function):
-        slice_duration = parse_duration(self._slice_duration_)
-        slice_data = self.group_by_time(subset_data, slice_duration)
+        slice_data = self.group_by_time(subset_data, self._slice_duration_)
         data_volume = self.calculate_volume(slice_data, weight_function)
         subset = subset_function(subset_options, categories)
         self.export_volume(subset, data_volume)
 
     def group_by_time(self, data, slice_duration):
-        time_slices = data.groupby(TimeGrouper(freq=slice_duration))
+        time_slices = data.groupby(utils.time_grouper(slice_duration))
         return time_slices
 
     def non_additive_subset_data(self, data, subset_options):
