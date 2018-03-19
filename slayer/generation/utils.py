@@ -57,10 +57,13 @@ def clap_time_intervals(time_intervals, slice_duration):
 
 
 def time_grouper(slice_duration):
+    # yearly durations
     if slice_duration[-1] == 'Y':
         return pd.TimeGrouper('AS')
-    elif slice_duration[-1] == 'M':
+    # monthly durations
+    elif slice_duration[-1] == 'M' and 'PT' not in slice_duration:
         return pd.TimeGrouper(slice_duration.replace('P', '') + 'S')
+    # all other durations
     else:
         return pd.TimeGrouper(parse_duration(slice_duration))
 
