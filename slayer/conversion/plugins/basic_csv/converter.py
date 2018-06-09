@@ -19,6 +19,9 @@ class Converter(BaseConverter):
         lat_column = kwargs.get('lat_column', 'lat')
         lon_column = kwargs.get('lon_column', 'lon')
 
+        raw_data.dropna(subset=[lon_column, lat_column, start_date_column],
+                        how='any', inplace=True)
+
         if not categories:
             raw_data, categories = Converter.add_default_category(raw_data)
 
