@@ -86,7 +86,7 @@ def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cel
     return new_bottom_right_lon, bottom_right_lat, top_left_lon, new_top_left_lat
 
 
-def get_bbox_geometry(bbox, cell_size, resolution=None):
+def get_bbox_geometry_by_meters(bbox, cell_size, resolution=None):
     min_lat, max_lat = lat2y(bbox.min_lat), lat2y(bbox.max_lat)
     if not resolution:
         width = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),
@@ -105,6 +105,20 @@ def get_bbox_geometry(bbox, cell_size, resolution=None):
     step = round(abs((bbox.max_lon - bbox.min_lon) / size[0]), 5)
 
     return size, (bbox.min_lon, min_lat), step
+
+
+def get_bbox_geometry_by_degree(self, bbox, cell_size, resolution=None):
+    if not resolution:
+        width = bbox.max_lon - bbox.min_lon
+        height = bbox.max_lat - bbox.min_lat
+        resolution_x = math.ceil(width / cell_size)
+        resolution_y = math.ceil(height / cell_size)
+        size = (resolution_x, resolution_y)
+    else:
+        size = (resolution['x'], resolution['y'])
+
+    step = round(cell_size, 5)
+    return size, (bbox.min_lon, bbox.min_lat), step
 
 
 def export_slice(data_slice, value_type, dataset, subset_id, timestamp):
