@@ -76,7 +76,7 @@ def approximated_time_intervals(tz):
 
 
 def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cellsize):
-    size, (min_lon, min_lat), step = get_bbox_geometry(constants.Bbox(bottom_right_lat=bottom_right_lat,
+    size, (min_lon, min_lat), step = get_bbox_geometry_by_meters(None, constants.Bbox(bottom_right_lat=bottom_right_lat,
                                      bottom_right_lon=bottom_right_lon,
                                      top_left_lat=top_left_lat,
                                      top_left_lon=top_left_lon), cellsize)
@@ -86,7 +86,7 @@ def fit_bbox(bottom_right_lon, bottom_right_lat, top_left_lon, top_left_lat, cel
     return new_bottom_right_lon, bottom_right_lat, top_left_lon, new_top_left_lat
 
 
-def get_bbox_geometry_by_meters(bbox, cell_size, resolution=None):
+def get_bbox_geometry_by_meters(self, bbox, cell_size, resolution=None):
     min_lat, max_lat = lat2y(bbox.min_lat), lat2y(bbox.max_lat)
     if not resolution:
         width = vincenty(Point(latitude=bbox.min_lat, longitude=bbox.min_lon),

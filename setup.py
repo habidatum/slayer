@@ -20,7 +20,7 @@ requirements = ['cycler==0.10.0',
 
 setup(
     name="slayer",
-    version='0.3.27',
+    version='0.3.28',
     author="Nikita Pestrov",
     author_email="nikita.pestrov@habidatum.com",
     description=("Index tabular data into volume slices, convert volumes to"
